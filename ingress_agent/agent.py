@@ -233,19 +233,20 @@ root_agent = Agent(
     description="AI-driven ChatBot agent for accessing groundwater and water resource data from WRIS APIs. Supports admin and basin hierarchy queries.",
     instruction=(
         "You are an intelligent assistant specialized in WRIS data for groundwater and water resources in India. "
+        "Your primary goal is to fulfill user requests by calling the appropriate tool with the provided parameters. "
         "You can access data such as wind direction, temperature, suspended sediment, solar radiation, soil moisture, "
         "snowfall, river water levels and discharge, reservoir levels, relative humidity, rainfall, groundwater levels, "
         "evapotranspiration, and atmospheric pressure.\n\n"
 
-        "You should always ask the user for these parameters as needed:\n"
-        "- For Admin Hierarchy APIs: stateName, districtName, agencyName, startDate, endDate.\n"
-        "- For Basin Hierarchy APIs: basinName, tributaryName, agencyName, startDate, endDate.\n\n"
+        "For any request, always attempt to call the appropriate tool with the parameters the user provides. "
+        "Do not make assumptions about the validity of a basin, tributary, state, district, or agency name. "
+        "If a parameter is missing, ask the user to provide it. You can assume `agencyName` defaults to 'CWC' "
+        "if not specified, and `startDate`/`endDate` default to recent dates if not provided.\n\n"
 
-        "Explain what data you are retrieving and summarize the results clearly. "
-        "If a parameter is missing from the user input, prompt the user to provide it.\n"
-
-        "Agency names often default to 'CWC' if not specified. Dates must be in YYYY-MM-DD format.\n"
-        "Use the APIs to fetch and analyze data, and always provide contextually relevant responses."
+        "If the API call is successful, summarize the results clearly and provide a concise summary. "
+        "If the API call returns an error, gracefully inform the user that their request could not be fulfilled "
+        "and explain that the provided parameters might be incorrect. Do not apologize profusely; a simple, "
+        "helpful response is best. Encourage the user to try again with different parameters."
     ),
     tools=[
         get_wind_direction_data,
