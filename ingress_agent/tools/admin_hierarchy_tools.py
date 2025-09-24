@@ -48,7 +48,7 @@ def get_wind_direction_data(state_name: str, district_name: str, agency_name: st
             if len(value_cols) > 0:
                 stats = default_processor.calculate_statistics(df, value_cols[0])
                 if 'error' not in stats:
-                    result['statistics'] = stats
+                    result['statistics'] = stats # pyright: ignore[reportArgumentType]
     
     return result
 
@@ -93,7 +93,7 @@ def get_ground_water_level_data(state_name: str, district_name: str, agency_name
             if len(value_cols) > 0:
                 stats = default_processor.calculate_statistics(df, value_cols[0])
                 if 'error' not in stats:
-                    result['statistics'] = stats
+                    result['statistics'] = stats # pyright: ignore[reportArgumentType]
                     result['data_quality_score'] = stats.get('data_quality_score', 0)
     
     return result
@@ -139,7 +139,7 @@ def get_rainfall_data(state_name: str, district_name: str, agency_name: str,
             if len(value_cols) > 0:
                 stats = default_processor.calculate_statistics(df, value_cols[0])
                 if 'error' not in stats:
-                    result['statistics'] = stats
+                    result['statistics'] = stats # pyright: ignore[reportArgumentType]
                     mean_rainfall = stats['mean']
                     if mean_rainfall < 10:
                         result['rainfall_category'] = 'Very Low'

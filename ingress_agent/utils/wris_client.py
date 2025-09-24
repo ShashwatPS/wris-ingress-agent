@@ -100,12 +100,12 @@ class WRISClient:
         
         endpoint = endpoint_map.get(data_type)
         if not endpoint:
-            return {"status": "error", "error_message": f"Unknown data type: {data_type}"}
+            return {"statusCode": 400, "message": f"Unknown data type: {data_type}", "data": []}
         
         # Build URL EXACTLY like your working version
         url = f"{self.base_url}{endpoint}"
         
-        # Prepare the query parameters
+        # Prepare the query parameters - same as in your curl example
         params = {
             'basinName': basin_name,
             'tributaryName': tributary_name,
@@ -119,7 +119,9 @@ class WRISClient:
 
         try:
             print(f"Requesting WRIS Basin Data: {url}")
-            # Use POST exactly like your working version
+            print(f"Parameters: {params}")
+            
+            # Use POST exactly like your curl example
             resp = requests.post(url, headers=self.headers, params=params, data='')
             
             print(f"Response Status Code: {resp.status_code}")
@@ -128,21 +130,29 @@ class WRISClient:
             if resp.status_code == 200:
                 data = resp.json()
                 print(f"WRIS Basin Data Response: {data}")
-                return {
-                    "status": "success",
-                    "data": data,
-                    "total_records": data.get("totalElements", 0)
-                }
+                
+                # Return the response as-is since it's already in correct format
+                # {"statusCode": 200, "message": "Data fetched successfully", "data": [...]}
+                if isinstance(data, dict) and 'statusCode' in data:
+                    return data
+                else:
+                    # If for some reason the format is different, wrap it
+                    return {
+                        "statusCode": 200,
+                        "message": "Data fetched successfully",
+                        "data": data
+                    }
             else:
                 return {
-                    "status": "error", 
-                    "error_message": f"API request failed with status {resp.status_code}: {resp.text}"
+                    "statusCode": resp.status_code,
+                    "message": f"API request failed with status {resp.status_code}: {resp.text}",
+                    "data": []
                 }
                 
         except requests.exceptions.RequestException as e:
-            return {"status": "error", "error_message": f"API request failed: {e}"}
+            return {"statusCode": 500, "message": f"API request failed: {e}", "data": []}
         except Exception as e:
-            return {"status": "error", "error_message": f"Exception occurred while fetching data: {str(e)}"}
+            return {"statusCode": 500, "message": f"Exception occurred while fetching data: {str(e)}", "data": []}
 
 # Use singleton pattern for module-wide client
 default_client = WRISClient()

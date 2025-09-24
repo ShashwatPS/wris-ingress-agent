@@ -88,7 +88,7 @@ def _fetch_and_process(
         )
         
         # Add total_records field for compatibility
-        result["total_records"] = total_records
+        result["total_records"] = total_records # type: ignore
         
         # Set status field for compatibility with existing logic
         result["status"] = "success"
@@ -99,7 +99,7 @@ def _fetch_and_process(
         except Exception as exc:
             logger.exception("Data processing to dataframe failed: %s", exc)
             # Still return the raw result but include an error message
-            result.setdefault("warnings", []).append(f"to_dataframe failed: {exc}")
+            result.setdefault("warnings", []).append(f"to_dataframe failed: {exc}") # type: ignore
             return result
 
         # If df is present and has numeric columns, compute statistics
@@ -112,13 +112,13 @@ def _fetch_and_process(
                     primary_col = 'dataValue' if 'dataValue' in value_cols else value_cols[0]
                     stats = default_processor.calculate_statistics(df, primary_col)
                     if isinstance(stats, dict) and "error" not in stats:
-                        result["statistics"] = stats
+                        result["statistics"] = stats # type: ignore
                     else:
                         # attach stats error as a warning
-                        result.setdefault("warnings", []).append({"stats_error": stats})
+                        result.setdefault("warnings", []).append({"stats_error": stats}) # type: ignore
         except Exception as exc:
             logger.exception("Statistics calculation failed: %s", exc)
-            result.setdefault("warnings", []).append(f"statistics calculation failed: {exc}")
+            result.setdefault("warnings", []).append(f"statistics calculation failed: {exc}") # type: ignore
 
     else:
         # API returned an error status
